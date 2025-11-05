@@ -11,7 +11,7 @@
  */
 int checkDistance(int dx, int dy, int r, Node *node)
 {
-    return (long long)dx * dx + dy * dy <= (long long)r * r;
+    return ((long long)dx * dx + dy * dy) <= (long long)r * r;
 }
 
 /* @brief Gets the number of collisions (nodes within radius r) in the AVL tree.
