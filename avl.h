@@ -5,12 +5,12 @@
 
 typedef struct Node
 {
-    long long x;
-    long long y;
+    int x;
+    int y;
     int height;
-    int subtree_count;      /* number of nodes in subtree including this node */
-    long long min_x, max_x; /* bounding box of subtree */
-    long long min_y, max_y;
+    int subtree_count; /* number of nodes in subtree including this node */
+    int min_x, max_x;  /* bounding box of subtree */
+    int min_y, max_y;
     struct Node *left;
     struct Node *right;
 } Node;
@@ -34,5 +34,5 @@ void update_node(Node *n); /* recompute height, subtree_count and bbox */
 AVL *create_avl(char *filename);
 
 void add_node(AVL *avl, Node *node);
-Node *create_node(long long x, long long y);
+Node *create_node(int x, int y);
 void free_tree(Node *node);

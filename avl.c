@@ -2,8 +2,8 @@
 #include <limits.h>
 
 /* helper min/max */
-static inline long long llmin(long long a, long long b) { return a < b ? a : b; }
-static inline long long llmax(long long a, long long b) { return a > b ? a : b; }
+static inline int llmin(int a, int b) { return a < b ? a : b; }
+static inline int llmax(int a, int b) { return a > b ? a : b; }
 
 /* Recompute subtree_count, bbox and height from children + self.
  * Call this after any child change or rotation.
@@ -210,7 +210,7 @@ void add_node(AVL *avl, Node *node)
  * @param y The y coordinate of the node.
  * @return The newly created node.
  */
-Node *create_node(long long x, long long y)
+Node *create_node(int x, int y)
 {
     Node *node = (Node *)malloc(sizeof(Node));
     if (!node)
@@ -264,9 +264,9 @@ AVL *create_avl(char *filename)
         free(avl);
         return NULL;
     }
-    long long x;
-    long long y;
-    while (fscanf(file, "%lld %lld", &x, &y) == 2)
+    int x;
+    int y;
+    while (fscanf(file, "%d %d", &x, &y) == 2)
     {
         Node *node = create_node(x, y);
         add_node(avl, node);

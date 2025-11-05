@@ -13,16 +13,16 @@ int main(int argc, char **argv)
     {
         return 1;
     }
-    long long x;
-    long long y;
-    long long r;
+    int x;
+    int y;
+    int r;
     int collisions;
     char line[256];
     while (fgets(line, sizeof line, stdin))
     {
         if (line[0] == '\n')
             break; // stop on blank line
-        if (sscanf(line, "%lld %lld %lld", &x, &y, &r) == 3)
+        if (sscanf(line, "%d %d %d", &x, &y, &r) == 3)
         {
             collisions = getNumCollisions(avl->root, x, y, r);
             printf("%d\n", collisions);
