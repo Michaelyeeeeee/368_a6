@@ -13,8 +13,10 @@ int checkDistance(int x, int y, int r, Node *node)
 {
     int node_x = node->x;
     int node_y = node->y;
-    int dist_sq = (x - node_x) * (x - node_x) + (y - node_y) * (y - node_y);
-    int radius_sq = r * r;
+    long long dx = (long long)x - node_x;
+    long long dy = (long long)y - node_y;
+    long long dist_sq = dx * dx + dy * dy;
+    long long radius_sq = (long long)r * r;
 
     return dist_sq <= radius_sq;
 }
@@ -36,10 +38,10 @@ int getNumCollisions(Node *node, int x, int y, int r)
     if (checkDistance(x, y, r, node))
         count++;
 
-    // Don't check all nodes, only those within x ± r
-    if (node->x >= x - r)
+    // Check both subtrees as points within radius r could be in either subtree
+    if ((x - r) <= node->x)
         count += getNumCollisions(node->left, x, y, r);
-    if (node->x <= x + r)
+    if ((x + r) >= node->x)
         count += getNumCollisions(node->right, x, y, r);
 
     return count;
