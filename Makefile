@@ -1,27 +1,18 @@
 CC = gcc
-CFLAGS = -Wall -g -Iinc
-LDFLAGS = -lm
-
-SRCDIR = src
-INCDIR = inc
-OBJDIR = obj
-
-SRCS := $(wildcard $(SRCDIR)/*.c)
-OBJS := $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRCS))
+CFLAGS = -Wall -g -s
+SRCS = a6.c avl.c collision.c
+OBJS = $(SRCS:.c=.o)
 TARGET = a6
-
+	
 .PHONY: all clean
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) -lm
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJDIR):
-	@mkdir -p $(OBJDIR)
-
 clean:
-	rm -rf $(OBJDIR) $(TARGET)
+	rm -f $(OBJS) $(TARGET)

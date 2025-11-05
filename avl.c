@@ -230,7 +230,6 @@ AVL *create_avl(char *filename)
     {
         Node *node = create_node(x, y);
         add_node(avl, node);
-        printf("Added node (%d, %d) to AVL\n", x, y);
     }
 
     fclose(file);
