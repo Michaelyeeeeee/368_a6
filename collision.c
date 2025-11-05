@@ -35,8 +35,14 @@ int getNumCollisions(Node *node, long long x, long long y, long long r)
         return 0;
 
     int count = 0;
-    if (checkDistance(x, y, r, node))
-        count++;
+
+    /* quick reject on x-difference: only compute full distance when |dx| <= r */
+    long long dx = (long long)node->x - x;
+    if (dx <= r && dx >= -1 * r)
+    {
+        if (checkDistance(x, y, r, node))
+            count++;
+    }
 
     // Check both subtrees as points within radius r could be in either subtree
     if ((x - r) <= node->x)
