@@ -20,5 +20,8 @@ int main(int argc, char **argv)
         collisions = getNumCollisions(avl->root, x, y, r);
         printf("%d\n", collisions);
     }
+
+    free_tree(avl->root);
+    free(avl);
     return 0;
 }
