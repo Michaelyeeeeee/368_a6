@@ -1,4 +1,44 @@
 #include "avl.h"
+#include <limits.h>
+
+/* helper min/max */
+static inline long long llmin(long long a, long long b) { return a < b ? a : b; }
+static inline long long llmax(long long a, long long b) { return a > b ? a : b; }
+
+/* Recompute subtree_count, bbox and height from children + self.
+ * Call this after any child change or rotation.
+ */
+void update_node(Node *n)
+{
+    if (!n)
+        return;
+
+    n->subtree_count = 1;
+    n->min_x = n->max_x = n->x;
+    n->min_y = n->max_y = n->y;
+
+    int lh = -1, rh = -1;
+    if (n->left)
+    {
+        n->subtree_count += n->left->subtree_count;
+        n->min_x = llmin(n->min_x, n->left->min_x);
+        n->max_x = llmax(n->max_x, n->left->max_x);
+        n->min_y = llmin(n->min_y, n->left->min_y);
+        n->max_y = llmax(n->max_y, n->left->max_y);
+        lh = n->left->height;
+    }
+    if (n->right)
+    {
+        n->subtree_count += n->right->subtree_count;
+        n->min_x = llmin(n->min_x, n->right->min_x);
+        n->max_x = llmax(n->max_x, n->right->max_x);
+        n->min_y = llmin(n->min_y, n->right->min_y);
+        n->max_y = llmax(n->max_y, n->right->max_y);
+        rh = n->right->height;
+    }
+
+    n->height = (lh > rh ? lh : rh) + 1;
+}
 
 /* @brief Performs a left rotation on the given node.
  *
@@ -11,6 +51,10 @@ Node *rotate_left(Node *node)
 
     node->right = new_root->left;
     new_root->left = node;
+
+    /* update bottom-up: updated old node first, then new_root */
+    update_node(node);
+    update_node(new_root);
 
     return new_root;
 }
@@ -27,8 +71,12 @@ Node *rotate_right(Node *node)
     node->left = new_root->right;
     new_root->right = node;
 
+    /* update bottom-up */
+    update_node(node);
+    update_node(new_root);
+
     return new_root;
-};
+}
 
 /* @brief Performs a left-right rotation on the given node.
  *
@@ -63,15 +111,16 @@ Node *rotate_right_left(Node *node)
  */
 Node *balance(Node *node)
 {
-    /* Use safe child height values. */
+    if (!node)
+        return NULL;
+
     int lh = node->left ? node->left->height : -1;
     int rh = node->right ? node->right->height : -1;
 
     if (lh - rh < -1)
     {
-        /* Right heavy */
-        int rlh = node->right->left ? node->right->left->height : -1;
-        int rrh = node->right->right ? node->right->right->height : -1;
+        int rlh = node->right && node->right->left ? node->right->left->height : -1;
+        int rrh = node->right && node->right->right ? node->right->right->height : -1;
         if (rlh > rrh)
             return rotate_right_left(node);
         else
@@ -79,9 +128,8 @@ Node *balance(Node *node)
     }
     else if (lh - rh > 1)
     {
-        /* Left heavy */
-        int llh = node->left->left ? node->left->left->height : -1;
-        int lrh = node->left->right ? node->left->right->height : -1;
+        int llh = node->left && node->left->left ? node->left->left->height : -1;
+        int lrh = node->left && node->left->right ? node->left->right->height : -1;
         if (llh >= lrh)
             return rotate_right(node);
         else
@@ -93,8 +141,7 @@ Node *balance(Node *node)
 
 /* @brief Finds and balances the given node and its children.
  *
- * @param node The node to find and balance.
- * @return The new root of the subtree after balancing.
+ * This version updates node metadata before deciding rotations.
  */
 Node *find_and_balance(Node *node)
 {
@@ -103,32 +150,27 @@ Node *find_and_balance(Node *node)
 
     node->left = find_and_balance(node->left);
     node->right = find_and_balance(node->right);
-    node->height = get_height(node);
 
-    /* Compute child heights safely (children may be NULL). */
+    /* recompute metadata (height, subtree_count, bounding box) */
+    update_node(node);
+
+    /* only do rotations if necessary */
     int lh = node->left ? node->left->height : -1;
     int rh = node->right ? node->right->height : -1;
-
-    /* only balance if lowest unbalanced node */
     if (lh - rh == 2 || lh - rh == -2)
         node = balance(node);
+
+    /* if rotated, rotation functions already updated metadata */
     return node;
 }
 
 /* @brief Gets the height of the given node.
  *
- * @param node The node to get the height of.
- * @return The height of the node.
+ * Now cheap because height is stored.
  */
 int get_height(Node *node)
 {
-    /* Return -1 for NULL so that an empty child has height -1, leaf has 0. */
-    if (!node)
-        return -1;
-    int left = get_height(node->left);
-    int right = get_height(node->right);
-
-    return ((left > right) ? left : right) + 1;
+    return node ? node->height : -1;
 }
 
 /* @brief Adds a node to the AVL tree.
@@ -138,7 +180,6 @@ int get_height(Node *node)
  */
 void add_node(AVL *avl, Node *node)
 {
-    /* If tree is empty, set root to new node. */
     if (!avl->root)
     {
         avl->root = node;
@@ -169,7 +210,7 @@ void add_node(AVL *avl, Node *node)
  * @param y The y coordinate of the node.
  * @return The newly created node.
  */
-Node *create_node(int x, int y)
+Node *create_node(long long x, long long y)
 {
     Node *node = (Node *)malloc(sizeof(Node));
     if (!node)
@@ -180,6 +221,9 @@ Node *create_node(int x, int y)
     node->x = x;
     node->y = y;
     node->height = 0;
+    node->subtree_count = 1;
+    node->min_x = node->max_x = x;
+    node->min_y = node->max_y = y;
     node->left = NULL;
     node->right = NULL;
 
