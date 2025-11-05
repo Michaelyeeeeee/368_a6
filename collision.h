@@ -5,5 +5,5 @@
 #include <stdlib.h>
 #include <string.h>
 
-int checkDistance(int x, int y, int r, Node *node);
-int getNumCollisions(Node *node, int x, int y, int r);
+int checkDistance(long long x, long long y, long long r, Node *node);
+int getNumCollisions(Node *node, long long x, long long y, long long r);

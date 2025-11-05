@@ -224,9 +224,9 @@ AVL *create_avl(char *filename)
         free(avl);
         return NULL;
     }
-    int x;
-    int y;
-    while (fscanf(file, "%d %d\n", &x, &y) == 2)
+    long long x;
+    long long y;
+    while (fscanf(file, "%lld %lld\n", &x, &y) == 2)
     {
         Node *node = create_node(x, y);
         add_node(avl, node);
