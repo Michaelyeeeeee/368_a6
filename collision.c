@@ -9,7 +9,7 @@
  * @param node The node to check the distance to.
  * @return 1 if the distance is less than or equal to r, 0 otherwise.
  */
-int checkDistance(long long dx, long long dy, long long r, Node *node)
+int checkDistance(int dx, int dy, int r, Node *node)
 {
     long long dist_sq = dx * dx + dy * dy;
     long long radius_sq = (long long)r * r;
@@ -25,7 +25,7 @@ int checkDistance(long long dx, long long dy, long long r, Node *node)
  * @param r The radius.
  * @return The number of collisions.
  */
-int getNumCollisions(Node *node, long long x, long long y, long long r)
+int getNumCollisions(Node *node, int x, int y, int r)
 {
     if (!node)
         return 0;
@@ -33,8 +33,8 @@ int getNumCollisions(Node *node, long long x, long long y, long long r)
     int count = 0;
 
     /* quick reject on x-difference: only compute full distance when |dx| <= r */
-    long long dx = (long long)node->x - x;
-    long long dy = (long long)node->y - y;
+    int dx = node->x - x;
+    int dy = node->y - y;
     if (dx <= r && dx >= -1 * r && dy <= r && dy >= -1 * r)
     {
         if (checkDistance(dx, dy, r, node))
