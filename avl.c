@@ -152,13 +152,8 @@ void add_node(AVL *avl, Node *node)
         pre = root;
         if (node->x < root->x)
             root = root->left;
-        else if (node->x > root->x)
+        else // node->x >= root->x
             root = root->right;
-        else
-        {
-            /* Duplicate x: ignore or handle as needed. Here we ignore insertion. */
-            return;
-        }
     }
     if (node->x < pre->x)
         pre->left = node;
@@ -180,6 +175,7 @@ Node *create_node(int x, int y)
     if (!node)
     {
         printf("Error creating node: malloc\n");
+        return NULL;
     }
     node->x = x;
     node->y = y;
@@ -225,8 +221,8 @@ AVL *create_avl(char *filename)
         return NULL;
     }
     long long x;
-    long y;
-    while (fscanf(file, "%lld %lld\n", &x, &y) == 2)
+    long long y;
+    while (fscanf(file, "%lld %lld", &x, &y) == 2)
     {
         Node *node = create_node(x, y);
         add_node(avl, node);

@@ -39,8 +39,10 @@ int getNumCollisions(Node *node, long long x, long long y, long long r)
         count++;
 
     // Check both subtrees as points within radius r could be in either subtree
-    count += getNumCollisions(node->left, x, y, r);
-    count += getNumCollisions(node->right, x, y, r);
+    if ((x - r) <= node->x)
+        count += getNumCollisions(node->left, x, y, r);
+    if ((x + r) >= node->x)
+        count += getNumCollisions(node->right, x, y, r);
 
     return count;
 }
