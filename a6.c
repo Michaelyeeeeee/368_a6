@@ -17,7 +17,6 @@ int main(int argc, char **argv)
     int y;
     int r;
     int collisions;
-    int maxX, minX, maxY, minY;
     char line[256];
     while (fgets(line, sizeof line, stdin))
     {
@@ -25,8 +24,7 @@ int main(int argc, char **argv)
             break; // stop on blank line
         if (sscanf(line, "%d %d %d", &x, &y, &r) == 3)
         {
-            getMaxMinXMaxMinY(x, y, r, &maxX, &minX, &maxY, &minY);
-            collisions = getNumCollisions(avl->root, maxX, minX, maxY, minY, r);
+            collisions = getNumCollisions(avl->root, x, y, r);
             printf("%d\n", collisions);
         }
         else
