@@ -9,14 +9,28 @@
  * @param node The node to check the distance to.
  * @return 1 if the distance is less than or equal to r, 0 otherwise.
  */
-int checkDistance(long long dx, long long dy, long long r, Node *node)
+int checkDistance(int x, int y, int r, Node *node)
 {
-    long long dist_sq = dx * dx + dy * dy;
-    long long radius_sq = (long long)r * r;
-
-    return dist_sq <= radius_sq;
+    return pow(pow(x - node->x, 2) + pow(y - node->y, 2), 0.5) <= pow(r, 2);
 }
 
+/* @brief Gets the maximum and minimum x and y coordinates for a square centered at (x, y) with side length 2r.
+ *
+ * @param x The x coordinate of the center point.
+ * @param y The y coordinate of the center point.
+ * @param r The radius.
+ * @param maxX Pointer to store the maximum x coordinate.
+ * @param minX Pointer to store the minimum x coordinate.
+ * @param maxY Pointer to store the maximum y coordinate.
+ * @param minY Pointer to store the minimum y coordinate.
+ */
+void getMaxMinXMaxMinY(int x, int y, int r, int *maxX, int *minX, int *maxY, int *minY)
+{
+    *maxX = x + r;
+    *minX = x - r;
+    *maxY = y + r;
+    *minY = y - r;
+}
 /* @brief Gets the number of collisions (nodes within radius r) in the AVL tree.
  *
  * @param node The root node of the AVL tree.
@@ -25,27 +39,26 @@ int checkDistance(long long dx, long long dy, long long r, Node *node)
  * @param r The radius.
  * @return The number of collisions.
  */
-int getNumCollisions(Node *node, long long x, long long y, long long r)
+int getNumCollisions(Node *node, int maxX, int minX, int maxY, int minY, int r)
 {
     if (!node)
         return 0;
 
     int count = 0;
 
-    /* quick reject on x-difference: only compute full distance when |dx| <= r */
-    long long dx = (long long)node->x - x;
-    long long dy = (long long)node->y - y;
-    if (dx <= r && dx >= -1 * r && dy <= r && dy >= -1 * r)
+    // check if within box of side length r*2 centered at (x, y)
+    if (node->x <= maxX && node->x >= minX && node->y <= maxY && node->y >= minY)
     {
-        if (checkDistance(dx, dy, r, node))
+        if (checkDistance(node->x, node->y, r, node))
             count++;
     }
 
-    // Check both subtrees as points within radius r could be in either subtree
-    if ((x - r) <= node->x)
-        count += getNumCollisions(node->left, x, y, r);
-    if ((x + r) >= node->x)
-        count += getNumCollisions(node->right, x, y, r);
-
+    // get collisions until leftmost/rightmost possible nodes
+    //  go left until out of range
+    if (minX <= node->x)
+        count += getNumCollisions(node->left, maxX, minX, maxY, minY, r);
+    // go right until out of range
+    if (maxX >= node->x)
+        count += getNumCollisions(node->right, maxX, minX, maxY, minY, r);
     return count;
 }
