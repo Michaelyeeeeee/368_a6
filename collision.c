@@ -9,9 +9,9 @@
  * @param node The node to check the distance to.
  * @return 1 if the distance is less than or equal to r, 0 otherwise.
  */
-int checkDistance(long long dx, long long dy, long long r, Node *node)
+int checkDistance(int dx, int dy, int r, Node *node)
 {
-    return dx * dx + dy * dy <= r * r;
+    return (long long)dx * dx + dy * dy <= (long long)r * r;
 }
 
 /* @brief Gets the number of collisions (nodes within radius r) in the AVL tree.
